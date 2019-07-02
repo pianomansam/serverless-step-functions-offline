@@ -19,6 +19,9 @@ custom:
   stepFunctionsOffline:
       FirstLambda: firstLambda
       AsyncLambda: asyncLambda
+      AsyncLambda1: asyncLambda
+      AsyncLambda2: asyncLambda
+      SecondAsyncLambda: secondAsyncLambda
 
 functions:
     firstLambda:
@@ -27,6 +30,9 @@ functions:
     asyncLambda:
         handler: examples/asyncLambda/index.handler
         name: AsyncLambda
+    secondAsyncLambda:
+        handler: examples/secondAsyncLambda/index.handler
+        name: SecondAsyncLambda
 
 stepFunctions:
   stateMachines:
@@ -41,6 +47,9 @@ stepFunctions:
             AsyncLambda:
               Type: Task
               Next: wait_using_seconds
+            # SecondAsyncLambda:
+            #   Type: Task
+            #   Next: wait_using_seconds
             wait_using_seconds:
               Type: Wait
               Seconds: 2
@@ -62,3 +71,45 @@ stepFunctions:
               Next: Done
             Done:
               Type: Succeed
+    bar: 
+        definition:
+          StartAt: FirstState
+          States:
+            FirstState:
+              Type: Pass
+              Next: FirstLambda
+            FirstLambda:
+              Type: Task
+              Next: Parallel
+            Parallel:
+              Type: Parallel
+              ResultPath: $.results
+              Next: Continue
+              Branches:
+                - StartAt: AsyncLambda1
+                  States:
+                    AsyncLambda1:
+                      Type: Task
+                      Done: true
+                - StartAt: AsyncLambda2
+                  States:
+                    AsyncLambda2:
+                      Type: Task
+                      Done: true
+            Continue:
+              Type: Choice
+              Choices:
+              - Variable: "$.expiryseconds"
+                NumericGreaterThan: 2
+                Next: SecondAsyncLambda
+              - Variable: "$.expiryseconds"
+                NumericLessThanEquals: 2
+                Next: AsyncLambda
+              Default: AsyncLambda
+            AsyncLambda:
+              Type: Task
+              Done: true
+            SecondAsyncLambda:
+              Type: Task
+              Done: true
+

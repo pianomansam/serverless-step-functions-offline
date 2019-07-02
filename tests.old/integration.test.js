@@ -15,21 +15,23 @@ describe('test local invoke', () => {
     });
   });
 
-  it('sls step-functions-offline has no errors', async () => {
+  it('sls step-functions-offline has no errors and is successful', async () => {
     console.log('Running sls step-functions-offline');
 
     const result = spawnSync(
       'yarn',
-      ['sls', 'step-functions-offline', '--stateMachine', 'foo'],
+      ['sls', 'step-functions-offline', '--stateMachine', 'foo', "--detailedLog", "-d", '{"foo":"bar"}'],
       {
         cwd: integrationPath,
         timeout: 6000,
       },
     );
 
-    console.log(result.stdout.toString());
+    const stdout = result.stdout.toString();
+    console.log(stdout);
     console.log(result.stderr.toString());
 
     expect(result.status).to.equal(0);
+    expect(stdout).to.contain('Succeed');
   });
 });

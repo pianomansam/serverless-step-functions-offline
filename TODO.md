@@ -1,0 +1,4 @@
+- [x] Support inline data on command line, not just passed in via a file
+- [ ] Support async lambda functions
+- [ ] Support path queries
+- [ ] Support true parallel operation

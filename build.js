@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 'use strict';
 const path = require('path');
 const moment = require('moment');
@@ -30,7 +31,6 @@ module.exports = {
         this.cliLog('Building StepWorkFlow');
         this.contextObject = this.createContextObject();
         this.states = this.stateDefinition.States;
-        console.log('data', Object.keys(this.eventFile).length ? this.eventFile : this.data);
 
         return Promise.resolve()
             .then(() => this.process(
@@ -76,13 +76,29 @@ module.exports = {
         return this._states(currentState, currentStateName);
     },
 
-    _run(f, event) {
+    async _run(f, event) {
         if (!f) {
-            return;
+            return Promise.resolve();
         }// end of states
         this.executionLog(`~~~~~~~~~~~~~~~~~~~~~~~~~~~ ${this.currentStateName} started ~~~~~~~~~~~~~~~~~~~~~~~~~~~`);
-        f(event, this.contextObject, this.contextObject.done);
+        return new Promise((resolve, reject) => {
+            this._callF(f, event, resolve, reject);
+        });
+    },
 
+    async _callF(f, event, resolve, reject) {
+        let called = false;
+        let result = await f(event, this.contextObject, (err, data) => {
+            called = true;
+              if (err) {
+                  reject(err);
+              } else {
+                  this.contextObject.done(err, data).then(() => resolve());
+              }
+          });
+        if (!called) {
+            this.contextObject.done(null, result).then(() => resolve());
+        }
     },
 
     _states(currentState, currentStateName) {

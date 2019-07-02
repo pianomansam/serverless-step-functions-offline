@@ -1,0 +1,6 @@
+{
+  "extends": "/usr/local/rdg_tools/.eslintrc.js",
+  "rules": {
+    "no-console": 0
+  }
+}
