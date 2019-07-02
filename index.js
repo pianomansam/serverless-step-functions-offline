@@ -12,6 +12,7 @@ class StepFunctionsOfflinePlugin {
         this.stateMachine = this.options.stateMachine;
         this.detailedLog = this.options.detailedLog || this.options.l;
         this.eventFile = this.options.event || this.options.e;
+        this.data = this.options.data || this.options.d;
         this.functions = this.serverless.service.functions;
         this.variables = this.serverless.service.custom.stepFunctionsOffline;
         this.cliLog = this.serverless.cli.log.bind(this.serverless.cli);
@@ -29,6 +30,7 @@ class StepFunctionsOfflinePlugin {
                     'findFunctionsPathAndHandler',
                     'findState',
                     'loadEventFile',
+                    'loadData',
                     'loadEnvVariables',
                     'buildStepWorkFlow'
                 ],
@@ -55,6 +57,7 @@ class StepFunctionsOfflinePlugin {
             'step-functions-offline:isInstalledPluginSLSStepFunctions': this.isInstalledPluginSLSStepFunctions.bind(this),
             'step-functions-offline:findState': this.findState.bind(this),
             'step-functions-offline:loadEventFile': this.loadEventFile.bind(this),
+            'step-functions-offline:loadData': this.loadData.bind(this),
             'step-functions-offline:loadEnvVariables': this.loadEnvVariables.bind(this),
             'step-functions-offline:buildStepWorkFlow': this.buildStepWorkFlow.bind(this)
         };
@@ -109,6 +112,17 @@ class StepFunctionsOfflinePlugin {
         try {
             this.eventFile = path.isAbsolute(this.eventFile) ? require(this.eventFile) :
                 require(path.join(process.cwd(), this.eventFile));
+        } catch (err) {
+            throw err;
+        }
+    }
+
+    loadData() {
+        if (!this.data) {
+            return this.data = {};
+        }
+        try {
+            this.data = JSON.parse(this.data);
         } catch (err) {
             throw err;
         }

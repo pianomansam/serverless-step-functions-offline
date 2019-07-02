@@ -145,7 +145,7 @@ describe('index.js', () => {
 
         it('should parse serverless.yml and find state', () => {
             stepFunctionsOfflinePlugin.stateMachine = 'foo';
-            stepFunctionsOfflinePlugin.serverless.config.servicePath = process.cwd();
+            stepFunctionsOfflinePlugin.serverless.config.servicePath = process.cwd() + '/tests';
             return stepFunctionsOfflinePlugin.hooks[hooks.findState]()
                 .then(() => {
                     expect(stepFunctionsOfflinePlugin.stateDefinition).to.have.property('Comment')

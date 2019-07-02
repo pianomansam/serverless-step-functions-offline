@@ -30,9 +30,14 @@ module.exports = {
         this.cliLog('Building StepWorkFlow');
         this.contextObject = this.createContextObject();
         this.states = this.stateDefinition.States;
+        console.log('data', Object.keys(this.eventFile).length ? this.eventFile : this.data);
 
         return Promise.resolve()
-            .then(() => this.process(this.states[this.stateDefinition.StartAt], this.stateDefinition.StartAt, this.eventFile))
+            .then(() => this.process(
+                this.states[this.stateDefinition.StartAt],
+                this.stateDefinition.StartAt,
+                Object.keys(this.eventFile).length ? this.eventFile : this.data)
+            )
             .catch(err => {
                 // console.log('OOPS', err.stack);
                 // this.cliLog(err);
